@@ -11,6 +11,8 @@ import store from './store/store'
 import axios from 'axios'
 import global_ from './components/Public/Global'//引用文件
 import VideoPlayer from 'vue-video-player' 
+import echarts from 'echarts' //引入echarts
+
 require('video.js/dist/video-js.css') 
 require('vue-video-player/src/custom-theme.css') 
 
@@ -18,6 +20,7 @@ Vue.use(VideoPlayer)
 Vue.use(iView)
 Vue.prototype.$ajax= axios
 Vue.prototype.GLOBAL=global_//挂载到Vue实例上面
+Vue.prototype.$echarts = echarts //引入组件
 Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
