@@ -79,6 +79,8 @@ export default {
         }
     },
     mounted() {
+        this.GLOBAL.GetGlobalValue()
+
         this.name = this.$route.query.name;
         this.id = this.$route.query.id;
         this.img = this.$route.query.img;
@@ -101,7 +103,6 @@ export default {
                     }
 
                 } else {
-
                     if (i % 100 == 0) {
                         var name = (i - 99) + "-" + i;
                         var dict_temp = { "name": name, "content": lst_fiction };
@@ -125,19 +126,47 @@ export default {
             this.$ajax.get(url).then(response => {
                 if (response.data.status == 1) {
                     if (response.data.data.length != 0) {
-                        this.first_content = { "name": response.data.data[0].ChapterName, "id": this.id, "num": response.data.data[0].ReadNum, "url": response.data.data[0].ReadUrl };;
+                        this.first_content = { "name": response.data.data[0].ChapterName, "id": this.id, "num": response.data.data[0].ReadNum, "url": response.data.data[0].ReadUrl };
                         this.readChapter = response.data.data[0].ChapterName;
                     }
                 }
             }, response => {
                 console.log(response);
             })
+        } else {
+            var FictionCookie = sessionStorage.getItem('FictionCookie');
+            this.GetFictionCookie(FictionCookie)
+            if (FictionCookie != null) {
+                this.first_content = { "name": this.name, "id": this.id, "num": this.read_num, "url": this.url };
+                this.readChapter = this.name;
+            }
         }
+
+    },
+
+    methods: {
+        GetFictionCookie: function(fiction_value) {
+            var arr = fiction_value.split(';'); //这里显示的格式需要切割一下自己可输出看下
+            for (var i = 0; i < arr.length; i++) {
+                var arr2 = arr[i].split('='); //再次切割
+                //判断查找相对应的值
+                if (arr2[0] == 'NameID') {
+                    this.id = arr2[1]; //保存到保存数据的地方
+                } else if (arr2[0] == 'ChapterName') {
+                    this.name = arr2[1];
+                } else if (arr2[0] == 'ReadNum') {
+                    this.read_num = arr2[1];
+                } else if (arr2[0] == 'ReadUrl') {
+                    this.url = arr2[1];
+                }
+
+            }
+        },
 
     }
 }
 </script>
-<style>
+<style scoped>
 .fiction_name {
     color: #333;
     font-size: 1.5rem;

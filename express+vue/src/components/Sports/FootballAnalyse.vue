@@ -119,6 +119,8 @@ export default {
 
     },
     mounted() {
+        this.GLOBAL.GetGlobalValue()
+
         this.screen_width = screen.width;
         this.name = this.$route.query.name;
         console.log(this.name);
@@ -167,7 +169,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .table_td {
     height: 1.5rem;
     line-height: 2rem;

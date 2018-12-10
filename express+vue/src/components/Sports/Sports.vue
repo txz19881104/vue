@@ -175,6 +175,8 @@ export default {
 
     },
     mounted() {
+        this.GLOBAL.GetGlobalValue()
+
         this.screen_width = screen.width;
         setInterval(this.timer, 1000);
 
@@ -321,7 +323,7 @@ export default {
     },
 }
 </script>
-<style>
+<style scoped>
 .style_magin_top {
     margin-top: 0.5rem;
 }

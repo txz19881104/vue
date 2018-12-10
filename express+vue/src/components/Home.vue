@@ -5,7 +5,6 @@
 		<Row>
 			<img :src="pic_path" width="100%"/>
 		</Row>
-    
 	</div>
 </template>
 
@@ -22,6 +21,8 @@ export default {
 
 	},
 	mounted() {
+		this.GLOBAL.GetGlobalValue();
+		
     	this.screen_width = screen.width;
     	var randomNum0to4 = Math.round(Math.random() * 4);
     	if (this.screen_width < 768) {
@@ -30,6 +31,10 @@ export default {
     		this.pic_path = "../../static/computer" + randomNum0to4 + ".jpg"
     	}
     	
+    	if (this.GLOBAL.IsLogin == 0) {
+    		var UserSetting = sessionStorage.getItem('UserSetting');
+    		this.GLOBAL.GetSetting(UserSetting)
+    	}
 	},
 }
 

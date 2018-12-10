@@ -38,7 +38,7 @@
     }
 </script>
 
-<style type="text/css">
+<style type="text/css" scoped>
 	#setting li{  
 		font-size: 14pt;
 		font-weight: bolder; 

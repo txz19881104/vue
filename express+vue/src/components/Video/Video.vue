@@ -1,18 +1,16 @@
 <template>
-	<div class="Video">
-		<title>Txz</title>
-		<Row>
-			<Col :xs="{ span: 24, offset: 0 }" :sm="{ span: 24, offset: 0 }" :md="{ span: 24, offset: 0}" :lg="{ span: 24, offset: 0 }">
-				<h2 style="margin-top: 10rem">To be continue...</h2>
-				<video-player  class="video-player vjs-custom-skin" ref="videoPlayer" :playsinline="true" :options="playerOptions"></video-player>
-			</Col>
-		</Row>
-    
-	</div>
+    <div class="Video">
+        <title>Txz</title>
+        <Row>
+            <Col :xs="{ span: 24, offset: 0 }" :sm="{ span: 24, offset: 0 }" :md="{ span: 24, offset: 0}" :lg="{ span: 24, offset: 0 }">
+            <h2 style="margin-top: 10rem">To be continue...</h2>
+            <video-player class="video-player vjs-custom-skin" ref="videoPlayer" :playsinline="true" :options="playerOptions"></video-player>
+            </Col>
+        </Row>
+    </div>
 </template>
-
 <script>
-export default {
+    export default {
 
 	data()
 	{
@@ -56,14 +54,16 @@ export default {
 		player() {
 			return this.$refs.videoPlayer.player
 		}
+	},
+	mounted() {
+		this.GLOBAL.GetGlobalValue()
 	}
 }
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style type="text/css" scoped>
-  .container {
+.container {
     background-color: #efefef;
     min-height: 100%;
-  }
+}
 </style>

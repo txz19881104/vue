@@ -10,7 +10,7 @@
     }
 </script>
 
-<style>
+<style scoped>
 #footer {     
     height:3rem;     
     width:100%;     

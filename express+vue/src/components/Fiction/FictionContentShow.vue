@@ -61,6 +61,8 @@ export default {
     },
 
     mounted() {
+        this.GLOBAL.GetGlobalValue()
+
         this.name = this.$route.query.name;
         this.id = this.$route.query.id;
         this.num = this.$route.query.num;
@@ -141,11 +143,15 @@ export default {
                     console.log("记录失败");
                 });
             }
+
+            var FictionCookie = "NameID=" + this.id + ";ChapterName=" + this.name + ";ReadNum=" + this.read_num + ";ReadUrl=" + this.url;
+            sessionStorage.setItem('FictionCookie', FictionCookie);
+
         }
     },
 }
 </script>
-<style>
+<style scoped>
 .content {
     font-family: 方正启体简体, "Microsoft YaHei", 微软雅黑, 宋体;
     line-height: 150%;

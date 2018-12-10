@@ -146,6 +146,8 @@ export default {
 
     },
     mounted() {
+        this.GLOBAL.GetGlobalValue()
+
         this.screen_width = screen.width;
         this.name = this.$route.query.name;
         this.team_name = this.$route.query.team_name;
@@ -153,14 +155,14 @@ export default {
 
         var url = `/api/Finish/BasketballAnalyse/${this.name}/${this.type}/${this.team_name}`;
         this.$ajax.get(url).then(response => {
-        	if (response.data.status == 1) {
-	            for (var i = 0; i < response.data.data.length; i++) {
-	                this.match.push(response.data.data[i]);
-	            }
-	            this.analyse = response.data.analyse
-	            this.option.series[0].data = [this.analyse.HTFirstBig, this.analyse.HTSecondBig, this.analyse.HTThirdBig, this.analyse.HTFourthBig]
-	            this.option.series[1].data = [this.analyse.VTFirstBig, this.analyse.VTSecondBig, this.analyse.VTThirdBig, this.analyse.VTFourthBig]
-	        }
+            if (response.data.status == 1) {
+                for (var i = 0; i < response.data.data.length; i++) {
+                    this.match.push(response.data.data[i]);
+                }
+                this.analyse = response.data.analyse
+                this.option.series[0].data = [this.analyse.HTFirstBig, this.analyse.HTSecondBig, this.analyse.HTThirdBig, this.analyse.HTFourthBig]
+                this.option.series[1].data = [this.analyse.VTFirstBig, this.analyse.VTSecondBig, this.analyse.VTThirdBig, this.analyse.VTFourthBig]
+            }
         }, response => {
             console.log(response);
         })
@@ -185,7 +187,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .table_td {
     height: 1.5rem;
     line-height: 2rem;

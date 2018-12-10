@@ -103,6 +103,7 @@ export default {
     },
 
     mounted() {
+        this.GLOBAL.GetGlobalValue()
         this.FictionShow()
     },
 
@@ -113,7 +114,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .carousel_inner img {
     margin: 0 auto;
     width: 70%;

@@ -7,12 +7,12 @@
             <Form ref="formInline" :model="formInline" :rules="ruleInline" class="form">
               <FormItem prop="user" >
                 <Input type="text" v-model="formInline.user" placeholder="用户名" >
-                  <Icon type="ios-person-outline" slot="prepend"></Icon>
+                  <Icon type="md-person" slot="prepend"></Icon>
                 </Input>
               </FormItem>
               <FormItem prop="password">
                 <Input type="password" v-model="formInline.password" placeholder="密码" >
-                  <Icon type="ios-locked-outline" slot="prepend"></Icon>
+                  <Icon type="md-unlock" slot="prepend"></Icon>
                 </Input>
               </FormItem>
               <Checkbox v-model="formInline.SavePasswd" class="password_check">记住密码</Checkbox>
@@ -25,17 +25,17 @@
             <Form ref="formInline" :model="formInline" :rules="ruleRegister" class="form">
               <FormItem prop="user" >
                 <Input type="text" v-model="formInline.user" placeholder="用户名" >
-                  <Icon type="ios-person-outline" slot="prepend"></Icon>
+                  <Icon type="md-person" slot="prepend"></Icon>
                 </Input>
               </FormItem>
               <FormItem prop="password">
                 <Input type="password" v-model="formInline.password" placeholder="密码" >
-                  <Icon type="ios-locked-outline" slot="prepend"></Icon>
+                  <Icon type="md-unlock" slot="prepend"></Icon>
                 </Input>
               </FormItem>
               <FormItem prop="password">
                 <Input type="password" v-model="formInline.passwordagain" placeholder="再次输入密码" >
-                  <Icon type="ios-locked-outline" slot="prepend"></Icon>
+                  <Icon type="md-unlock" slot="prepend"></Icon>
                 </Input>
               </FormItem>
               <FormItem>
@@ -89,6 +89,7 @@
           }
       },
       methods: {
+
           Login (name){
             var url = "/api/Login";
             this.$ajax.post(url, qs.stringify({  user: this.formInline.user,  password: this.formInline.password} )).then(response=> {  
@@ -107,7 +108,11 @@
 
                     this.GLOBAL.IsLogin  = response.data.rows[0].UserAuthority;
                     this.GLOBAL.UserName = response.data.rows[0].UserName;
-                    this.GetSetting(response.data.rows[0].UserSetting)
+
+                    var LoginValue = "IsLogin=" + this.GLOBAL.IsLogin + ";UserName=" + this.GLOBAL.UserName;
+                    sessionStorage.setItem('LoginValue', LoginValue);
+
+                    this.GLOBAL.GetSetting(response.data.rows[0].UserSetting)
                     this.$Message.success('登录成功!');
                     this.$router.push({ path: '/'});
                     this.reload();
@@ -148,6 +153,9 @@
                               this.setCookie(this.formInline.user, this.formInline.password, 7);
                               this.$Message.success('注册成功!');
                               this.$router.push({ path: '/', query: { userName: this.formInline.user }});
+
+                              var LoginValue = "IsLogin=" + this.GLOBAL.IsLogin + ";UserName=" + this.GLOBAL.UserName;
+                              sessionStorage.setItem('LoginValue', LoginValue);
                             } else {
                               this.$Message.error('用户名已经被使用，请重新注册！');
                             }
@@ -196,23 +204,6 @@
               }
           },
 
-          GetSetting:function(setting) {
-            var arr = setting.split(';'); //这里显示的格式需要切割一下自己可输出看下
-            for (var i = 0; i < arr.length; i++) {
-                var arr2 = arr[i].split('='); //再次切割
-                //判断查找相对应的值
-                if (arr2[0] == 'FictionBackgroundColor') {
-                  this.GLOBAL.FictionBackgroundColor = arr2[1]; //保存到保存数据的地方
-                } else if (arr2[0] == 'FictionFontColor') {
-                  this.GLOBAL.FictionFontColor = arr2[1];
-                } else if (arr2[0] == 'FictionFontSize') {
-                  this.GLOBAL.FictionFontSize = Number(arr2[1]);
-                } else if (arr2[0] == 'ComicBackgroundColor') {
-                  this.GLOBAL.ComicBackgroundColor = arr2[1];
-                }
-
-            }
-          },
 
           //清除cookie
           clearCookie: function() {
@@ -228,16 +219,21 @@
           this.GLOBAL.FictionFontColor = '#000';
           this.GLOBAL.FictionFontSize = 19;
           this.GLOBAL.ComicBackgroundColor = '#fff';
+
+          var LoginValue = "IsLogin=" + this.GLOBAL.IsLogin + ";UserName=" + this.GLOBAL.UserName;
+          sessionStorage.setItem('LoginValue', LoginValue);
         }
         else
         {
           this.getCookie();
         }
+
+        this.GLOBAL.GetGlobalValue()
       }
   }
 </script>
 
-<style>
+<style scoped>
   .style_magin_top_login {
     margin-top: 10rem;
   }

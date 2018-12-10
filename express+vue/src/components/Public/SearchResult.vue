@@ -100,6 +100,7 @@ export default {
   },
 
   mounted() {
+    this.GLOBAL.GetGlobalValue()
     this.screen_width = screen.width;
 
     console.log(this.$route.query.keyword)
@@ -119,7 +120,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .carousel_inner img {
     margin: 0 auto;
     width:70%;
