@@ -31,10 +31,6 @@ export default {
     		this.pic_path = "../../static/computer" + randomNum0to4 + ".jpg"
     	}
     	
-    	if (this.GLOBAL.IsLogin == 0) {
-    		var UserSetting = sessionStorage.getItem('UserSetting');
-    		this.GLOBAL.GetSetting(UserSetting)
-    	}
 	},
 }
 

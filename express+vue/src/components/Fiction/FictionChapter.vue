@@ -25,7 +25,7 @@
                     </Row>
                     <Row class="style_row div_left">
                         <router-link :to="{name:'FictionContentShow', query:{name:first_content.name, id:first_content.id, num:first_content.num, url:first_content.url} }">
-                            <button type="button" class="btn btn-primary" style="margin-top: 0.5rem;">{{readChapter}}</button>
+                            <button type="button" class="btn btn-primary" style="margin-top: 0.5rem;" :class="{read_back_color:(is_update==true)}">{{readChapter}}</button>
                         </router-link>
                     </Row>
                     </Col>
@@ -33,28 +33,16 @@
                 <div class="hr" />
                 <Row class="back_color">
                     <Col :xs="{ span: 22, offset: 1 }" :lg="{ span: 20, offset: 2 }">
-                    <Tabs type="card" class="style_magin">
-                        <TabPane v-for="Chapter in fiction_content" :key="Chapter.name" :label="Chapter.name">
-                            <template v-for="(data) in (Chapter.content)">
-                                <div v-if="screen_width < 768">
-                                    <Col :xs="{ span: 11, offset: 1}">
-                                    <div class="table_td">
-                                        <router-link :to="{name:'FictionContentShow', query:{name:data.name, id:data.id, num:data.num, url:data.url} }">{{data.name}}</router-link>
-                                    </div>
-                                    <hr />
-                                    </Col>
-                                </div>
-                                <div v-else>
-                                    <Col :md="{ span: 12}" :lg="{ span: 6}">
-                                    <div class="table_td">
-                                        <router-link :to="{name:'FictionContentShow', query:{name:data.name, id:data.id, num:data.num, url:data.url} }">{{data.name}}</router-link>
-                                    </div>
-                                    <hr />
-                                    </Col>
-                                </div>
-                            </template>
-                        </TabPane>
-                    </Tabs>
+                    <Scroll :on-reach-bottom="handleReachBottom" :distance-to-edge="-10" :height="600">
+                        <template v-for="(data) in fiction_content" style="width: 100%;">
+                            <Col :md="{ span: 12}" :lg="{ span: 6}" :xs="{ span: 12}">
+                            <div class="table_td">
+                                <router-link :to="{name:'FictionContentShow', query:{name:data.name, id:data.id, num:data.num, url:data.url} }">{{data.name}}</router-link>
+                            </div>
+                            <hr />
+                            </Col>
+                        </template>
+                    </Scroll>
                     </Col>
                 </Row>
             </div>
@@ -75,7 +63,12 @@ export default {
             first_content: { "name": "开始阅读", "id": 0, "num": 0 },
             fiction_content: [],
             screen_width: 200,
-            readChapter: '开始阅读'
+            readChapter: '开始阅读',
+            current_chapter_num: 0,
+            max_chapter: 0,
+            read_chapter: 0,
+            is_update: false,
+            bGetResponse: false,
         }
     },
     mounted() {
@@ -87,34 +80,28 @@ export default {
         this.introduce = this.$route.query.introduce;
         this.screen_width = screen.width;
 
-        var url = "/api/Name/Fiction/Chapter/" + this.id;
+        var url = "/api/Name/Fiction/Chapter/" + this.id + "/" + this.current_chapter_num;
         this.$ajax.get(url).then(response => {
-            var lst_fiction = []
-            var dic_fiction = []
             var i;
+
+            this.max_chapter = response.data.max_chapter;
+            if (this.max_chapter > this.read_chapter) {
+                this.is_update = true;
+            }
 
             for (i = 1; i < response.data.data.length + 1; i++) {
                 var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum, "url": response.data.data[i - 1].ContentUrl };
 
-                lst_fiction.push(content);
+
+                this.fiction_content.push(content);
                 if (i == 1) {
                     if (this.first_content.id == 0) {
                         this.first_content = content;
                     }
-
-                } else {
-                    if (i % 100 == 0) {
-                        var name = (i - 99) + "-" + i;
-                        var dict_temp = { "name": name, "content": lst_fiction };
-                        this.fiction_content.push(dict_temp);
-                        lst_fiction = [];
-                    }
                 }
             }
 
-            var name = (i - (i % 100) + 1) + "-" + i;
-            var dict_temp = { "name": name, "content": lst_fiction };
-            this.fiction_content.push(dict_temp);
+            this.current_chapter_num = this.current_chapter_num + 400;
 
         }, response => {
             console.log(response);
@@ -127,6 +114,11 @@ export default {
                 if (response.data.status == 1) {
                     if (response.data.data.length != 0) {
                         this.first_content = { "name": response.data.data[0].ChapterName, "id": this.id, "num": response.data.data[0].ReadNum, "url": response.data.data[0].ReadUrl };
+
+                        this.read_chapter = response.data.data[0].ReadNum;
+                        if (this.max_chapter > this.read_chapter) {
+                            this.is_update = true;
+                        }
                         this.readChapter = response.data.data[0].ChapterName;
                     }
                 }
@@ -162,7 +154,34 @@ export default {
 
             }
         },
+        handleReachBottom() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    var url = "/api/Name/Fiction/Chapter/" + this.id + "/" + this.current_chapter_num;
 
+                    if (!this.bGetResponse) {
+                        this.bGetResponse = true;
+                        this.$ajax.get(url).then(response => {
+                            var i;
+
+                            for (i = 1; i < response.data.data.length + 1; i++) {
+                                var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum, "url": response.data.data[i - 1].ContentUrl };
+
+                                this.fiction_content.push(content);
+                            }
+
+                            this.current_chapter_num = this.current_chapter_num + 400;
+                            this.bGetResponse = false;
+
+                        }, response => {
+                            console.log(response);
+                            this.bGetResponse = false;
+                        })
+                    }
+                    resolve();
+                }, 2000);
+            });
+        }
     }
 }
 </script>
@@ -220,5 +239,9 @@ export default {
     border-radius: 0.5rem;
     border: 0.2rem solid #e5e5e5;
     background-color: #eee;
+}
+
+.read_back_color {
+    background: #fcc;
 }
 </style>

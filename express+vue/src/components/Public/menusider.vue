@@ -140,9 +140,12 @@ export default {
         },
 
         ok() {
+
+            var UserSetting = "FictionBackgroundColor=" + this.GLOBAL.FictionBackgroundColor + ";FictionFontColor=" + this.GLOBAL.FictionFontColor + ";FictionFontSize=" + this.GLOBAL.FictionFontSize + ";ComicBackgroundColor=" + this.GLOBAL.ComicBackgroundColor;
+            console.log(UserSetting)
+
             if (this.GLOBAL.IsLogin != 0) {
                 var url = "/api/ChangeSetting";
-                var UserSetting = "FictionBackgroundColor=" + this.GLOBAL.FictionBackgroundColor + ";FictionFontColor=" + this.GLOBAL.FictionFontColor + ";FictionFontSize=" + this.GLOBAL.FictionFontSize + ";ComicBackgroundColor=" + this.GLOBAL.ComicBackgroundColor;
 
                 this.$ajax.post(url, qs.stringify({ user: this.GLOBAL.UserName, setting: UserSetting })).then(response => {
                     if (response.status == 200) {
@@ -155,10 +158,9 @@ export default {
                         console.log("setting failed!")
                     }
                 });
-            } else {
-                var UserSetting = "FictionBackgroundColor=" + this.GLOBAL.FictionBackgroundColor + ";FictionFontColor=" + this.GLOBAL.FictionFontColor + ";FictionFontSize=" + this.GLOBAL.FictionFontSize + ";ComicBackgroundColor=" + this.GLOBAL.ComicBackgroundColor;
-                sessionStorage.setItem('UserSetting', UserSetting);
             }
+
+            sessionStorage.setItem('UserSetting', UserSetting);
 
             this.$refs.side_menu.toggleCollapse();
             this.$Message.info('设置成功');

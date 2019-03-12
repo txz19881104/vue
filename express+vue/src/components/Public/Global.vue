@@ -63,6 +63,7 @@ export default {
 
     GetGlobalValue: function() {
         var UserSetting = sessionStorage.getItem('UserSetting');
+        console.log(UserSetting)
         this.GetSetting(UserSetting);
 
         var LoginValue = sessionStorage.getItem('LoginValue');

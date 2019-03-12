@@ -8,7 +8,7 @@ h<template>
                 <Row class="style_magin back_color">
                     <Col :xs="{ span: 22, offset: 1}" :lg="{ span: 10, offset: 1 }" class="div_left">
                     <img :src="img" width="100%" height="100%" style="float:left;">
-            </Col>
+                    </Col>
                     <Col :xs="{ span: 22, offset: 1}" :lg="{  span: 11, offset: 1 }">
                     <Row>
                         <h2 class="text_left comic_name">{{name}}</h2>
@@ -25,7 +25,7 @@ h<template>
                     </Row>
                     <Row class="style_row div_left">
                         <router-link :to="{name:'ComicPicShow', query:{name:first_content.name, id:first_content.id, num:first_content.num} }">
-                            <button type="button" class="btn btn-primary" style="margin-top: 3rem;">{{readChapter}}</button>
+                            <button type="button" class="btn btn-primary" style="margin-top: 3rem;" :class="{read_back_color:(is_update==true)}">{{readChapter}}</button>
                         </router-link>
                     </Row>
                     </Col>
@@ -33,28 +33,16 @@ h<template>
                 <div class="hr" />
                 <Row class="back_color">
                     <Col :xs="{ span: 22, offset: 1 }" :lg="{ span: 20, offset: 2 }">
-                    <Tabs type="card" class="style_magin">
-                        <TabPane v-for="Chapter in comic_content" :key="Chapter.name" :label="Chapter.name">
-                            <template v-for="(data) in (Chapter.content)">
-                                <div v-if="screen_width < 768">
-                                    <Col :xs="{ span: 11, offset: 1}">
-                                    <div class="table_td">
-                                        <router-link :to="{name:'ComicPicShow', query:{name:data.name, id:data.id, num:data.num} }">{{data.name}}</router-link>
-                                    </div>
-                                    <hr />
-                                    </Col>
-                                </div>
-                                <div v-else>
-                                    <Col :md="{ span: 12}" :lg="{ span: 6}">
-                                    <div class="table_td">
-                                        <router-link :to="{name:'ComicPicShow', query:{name:data.name, id:data.id, num:data.num} }">{{data.name}}</router-link>
-                                    </div>
-                                    <hr />
-                                    </Col>
-                                </div>
-                            </template>
-                        </TabPane>
-                    </Tabs>
+                    <Scroll :on-reach-bottom="handleReachBottom" :distance-to-edge="-10" :height="600">
+                        <template v-for="(data) in comic_content" style="width: 100%;">
+                            <Col :xs="{ span: 12}" :md="{ span: 12}" :lg="{ span: 6}">
+                            <div class="table_td">
+                                <router-link :to="{name:'ComicPicShow', query:{name:data.name, id:data.id, num:data.num} }">{{data.name}}</router-link>
+                            </div>
+                            <hr />
+                            </Col>
+                        </template>
+                    </Scroll>
                     </Col>
                 </Row>
             </div>
@@ -75,7 +63,12 @@ export default {
             first_content: { "name": "开始阅读", "id": 0, "num": 0 },
             comic_content: [],
             screen_width: 200,
-            readChapter: "开始阅读"
+            readChapter: "开始阅读",
+            current_chapter_num: 0,
+            max_chapter: 0,
+            read_chapter: 0,
+            is_update: false,
+            bGetResponse: false,
         }
     },
     mounted() {
@@ -88,35 +81,27 @@ export default {
         this.screen_width = screen.width;
 
 
-        var url = "/api/Name/Comic/Chapter/" + this.id;
+        var url = "/api/Name/Comic/Chapter/" + this.id + "/" + this.current_chapter_num;
         this.$ajax.get(url).then(response => {
-
-            var lst_comic = []
-            var dic_comic = []
             var i;
 
-            for (i = 1; i < response.data.data.length + 1; i++) {
-                var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum };
+            this.max_chapter = response.data.max_chapter;
+            if (this.max_chapter > this.read_chapter) {
+                this.is_update = true;
+            }
 
-                lst_comic.push(content);
+            for (i = 1; i < response.data.data.length + 1; i++) {
+                var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum, "url": response.data.data[i - 1].ContentUrl };
+
+                this.comic_content.push(content);
                 if (i == 1) {
                     if (this.first_content.id == 0) {
                         this.first_content = content;
                     }
-                } else {
-
-                    if (i % 100 == 0) {
-                        var name = (i - 99) + "-" + i;
-                        var dict_temp = { "name": name, "content": lst_comic };
-                        this.comic_content.push(dict_temp);
-                        lst_comic = [];
-                    }
                 }
             }
 
-            var name = (i - (i % 100) + 1) + "-" + i;
-            var dict_temp = { "name": name, "content": lst_comic };
-            this.comic_content.push(dict_temp);
+            this.current_chapter_num = this.current_chapter_num + 400;
 
         }, response => {
             console.log(response);
@@ -129,6 +114,12 @@ export default {
                 if (response.data.status == 1) {
                     if (response.data.data.length != 0) {
                         this.first_content = { "name": response.data.data[0].ChapterName, "id": this.id, "num": response.data.data[0].ReadNum };
+
+                        this.read_chapter = response.data.data[0].ReadNum;
+                        if (this.max_chapter > this.read_chapter) {
+                            this.is_update = true;
+                        }
+
                         this.readChapter = response.data.data[0].ChapterName;
                     }
                 }
@@ -139,7 +130,7 @@ export default {
             var ComicCookie = sessionStorage.getItem('ComicCookie');
             this.GetComicCookie(ComicCookie)
             if (ComicCookie != null) {
-                this.first_content = { "name": this.name, "id": this.id, "num": this.read_num};
+                this.first_content = { "name": this.name, "id": this.id, "num": this.read_num };
                 this.readChapter = this.name;
             }
         }
@@ -158,10 +149,39 @@ export default {
                     this.name = arr2[1];
                 } else if (arr2[0] == 'ReadNum') {
                     this.read_num = arr2[1];
-                } 
+                }
             }
         },
+        handleReachBottom() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    console.log(this.current_chapter_num);
+                    var url = "/api/Name/Fiction/Chapter/" + this.id + "/" + this.current_chapter_num;
 
+                    if (!this.bGetResponse) {
+                        this.bGetResponse = true;
+                        this.$ajax.get(url).then(response => {
+                            var i;
+
+                            for (i = 1; i < response.data.data.length + 1; i++) {
+                                var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum, "url": response.data.data[i - 1].ContentUrl };
+
+                                this.comic_content.push(content);
+                            }
+
+                            this.current_chapter_num = this.current_chapter_num + 400;
+                            this.bGetResponse = false;
+
+
+                        }, response => {
+                            console.log(response);
+                            this.bGetResponse = false;
+                        })
+                    }
+                    resolve();
+                }, 2000);
+            });
+        }
     }
 }
 </script>
@@ -220,5 +240,9 @@ export default {
     border-radius: 0.5rem;
     border: 0.2rem solid #e5e5e5;
     background-color: #eee;
+}
+
+.read_back_color {
+    background: #fcc;
 }
 </style>

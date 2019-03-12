@@ -1,18 +1,18 @@
 <template>
-    <div class="Article">
-        <title>Txz</title>
-        <Row>
-            <Col :xs="{ span: 24, offset: 0 }" :sm="{ span: 24, offset: 0 }" :md="{ span: 24, offset: 0}" :lg="{ span: 24, offset: 0 }">
-            <h2 style="margin-top: 10rem">To be continue...</h2>
-            </Col>
-        </Row>
+    <div>
+        <h1>document</h1>
+        <vue-markdown>{{msg}}</vue-markdown>
     </div>
 </template>
 <script>
+import VueMarkdown from 'vue-markdown';
+import README from './01.0.md';
 export default {
-    mounted() {
-        this.GLOBAL.GetGlobalValue()
+    name: 'document',
+    components: { VueMarkdown },
+    data() {
+        return { msg: README }
     },
-    components: {}
+    methods: {}
 }
 </script>

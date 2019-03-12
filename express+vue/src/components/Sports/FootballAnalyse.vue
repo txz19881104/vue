@@ -4,7 +4,138 @@
         <Row class="style_magin_top">
             <Col :xs="{ span: 24, offset: 0 }" :lg="{ span: 16, offset: 4}" class="demo-tabs-style1" style="background: #e3e8ee;padding:16px;">
             <Tabs type="card">
-                <TabPane label="数据" icon="ios-basketball">
+                <TabPane label="数据" icon="ios-football">
+                    <table style="border:0.1rem #abc solid;" border='1'>
+                        <h2 align="cen" style="color:green;">进行中</h2>
+                        <div v-for="data in live_football">
+                            <tr style="background:#cba;">
+                                <td width="200" style="background:#fcc;" class="table_td" @click="GetTeamStatics('ht', data.football_data)">
+                                    {{data.football_data.HTName}}
+                                </td>
+                                <td width="300" style="background:#abc;">
+                                    {{data.football_data.Name}} {{data.football_data.EventSta}}
+                                </td>
+                                <td width="200" style="background:#edf;" class="table_td" @click="GetTeamStatics('vt', data.football_data.VTName, data.football_data.VTNameAlias)">
+                                    {{data.football_data.VTName}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTTotalScore==data.football_data.HTHalfScore)}">{{data.football_data.HTTotalScore}}</td>
+                                <td width="200">全场比分</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTTotalScore==data.football_data.VTHalfScore)}">{{data.football_data.VTTotalScore}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTHalfScore}}</td>
+                                <td width="200">半场比分</td>
+                                <td width="100">{{data.football_data.VTHalfScore}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTShoot>=15)}">{{data.football_data.HTShoot}}</td>
+                                <td width="200">射门</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTShoot>=15)}">{{data.football_data.VTShoot}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTShooton>=10)}">{{data.football_data.HTShooton}}</td>
+                                <td width="200">射正</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTShooton>=10)}">{{data.football_data.VTShooton}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTHalfCorner}}</td>
+                                <td width="200">半场角球</td>
+                                <td width="100">{{data.football_data.VTHalfCorner}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTTotalCorner}}</td>
+                                <td width="200">全场角球</td>
+                                <td width="100">{{data.football_data.VTTotalCorner}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.Asionodd}}</td>
+                                <td width="200">盘口</td>
+                                <td width="100">{{data.football_data.Numodd}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTRed}}</td>
+                                <td width="200">红牌</td>
+                                <td width="100">{{data.football_data.VTRed}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HGoalTime}}</td>
+                                <td width="200">进球时间</td>
+                                <td width="100">{{data.football_data.VGoalTime}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTStatic}}</td>
+                                <td width="200">绝杀</td>
+                                <td width="100">{{data.football_data.VTStatic}}</td>
+                            </tr>
+                            <br />
+                        </div>
+                    </table>
+                    <table style="border:0.1rem #abc solid;" border='1'>
+                        <h2 align="cen" style="color:green;">完场</h2>
+                        <div v-for="data in over_football">
+                            <tr style="background:#cba;">
+                                <td width="200" style="background:#fcc;" class="table_td">
+                                    {{data.football_data.HTName}}
+                                </td>
+                                <td width="300" style="background:#abc;">
+                                    {{data.football_data.Name}} {{data.football_data.EventSta}}
+                                </td>
+                                <td width="200" style="background:#edf;" class="table_td">
+                                    {{data.football_data.VTName}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTTotalScore==data.football_data.HTHalfScore)}">{{data.football_data.HTTotalScore}}</td>
+                                <td width="200">全场比分</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTTotalScore==data.football_data.VTHalfScore)}">{{data.football_data.VTTotalScore}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTHalfScore}}</td>
+                                <td width="200">半场比分</td>
+                                <td width="100">{{data.football_data.VTHalfScore}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTShoot>=15)}">{{data.football_data.HTShoot}}</td>
+                                <td width="200">射门</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTShoot>=15)}">{{data.football_data.VTShoot}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTShooton>=10)}">{{data.football_data.HTShooton}}</td>
+                                <td width="200">射正</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTShooton>=10)}">{{data.football_data.VTShooton}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTHalfCorner}}</td>
+                                <td width="200">半场角球</td>
+                                <td width="100">{{data.football_data.VTHalfCorner}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTTotalCorner}}</td>
+                                <td width="200">全场角球</td>
+                                <td width="100">{{data.football_data.VTTotalCorner}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.Asionodd}}</td>
+                                <td width="200">盘口</td>
+                                <td width="100">{{data.football_data.Numodd}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTRed}}</td>
+                                <td width="200">红牌</td>
+                                <td width="100">{{data.football_data.VTRed}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HGoalTime}}</td>
+                                <td width="200">进球时间</td>
+                                <td width="100">{{data.football_data.VGoalTime}}</td>
+                            </tr>
+                            <br />
+                        </div>
+                    </table>
+                </TabPane>
+                <TabPane label="分析" icon="ios-football">
                     <table style="border:0.1rem #abc solid;" border='1'>
                         <h2 align="cen" style="color:green;">统计</h2>
                         <div>
@@ -52,8 +183,6 @@
                             </tr>
                         </div>
                     </table>
-                </TabPane>
-                <TabPane label="分析" icon="ios-football">
                     <div id="FootballGoalTime" :style="{width: '100%', height: '30rem'}"></div>
                     <div id="UpEffectDown" :style="{width: '100%', height: '30rem'}"></div>
                 </TabPane>
@@ -74,6 +203,10 @@ export default {
             type: '',
             match: [],
             analyse: "",
+            ht_statics: "",
+            vt_statics: "",
+            live_football: [],
+            over_football: [],
 
             FootballGoalTime: {
                 title: {
@@ -84,7 +217,6 @@ export default {
                     data: ['百分比']
                 },
                 xAxis: {
-                    //data: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"]
                     data: []
                 },
                 yAxis: {},
@@ -104,7 +236,6 @@ export default {
                     data: ['百分比']
                 },
                 xAxis: {
-                    //data: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"]
                     data: []
                 },
                 yAxis: {},
@@ -120,10 +251,10 @@ export default {
     },
     mounted() {
         this.GLOBAL.GetGlobalValue()
+        setInterval(this.timer, 1000);
 
         this.screen_width = screen.width;
         this.name = this.$route.query.name;
-        console.log(this.name);
 
         var url = `/api/Finish/FootballAnalyse/${this.name}`;
         this.$ajax.get(url).then(response => {
@@ -142,12 +273,47 @@ export default {
 
                     this.UpEffectDown.series[0].data.push((this.analyse.MapUpEffectDown[key].GoalHaveGoalMatch / this.analyse.MapUpEffectDown[key].GoalTotalGoalMatch).toFixed(2))
                 }
+
+                this.live_football = []
+                if (response.data.data != null) {
+                    for (var i = response.data.data.length - 1; i >= 0; i--) {
+                        this.live_football.push({ "football_data": response.data.data[i] });
+                    }
+                }
+
+
+                this.over_football = []
+                if (response.data.over != null) {
+                    for (var i = response.data.over.length - 1; i >= 0; i--) {
+                        this.over_football.push({ "football_data": response.data.over[i] });
+                    }
+                }
             }
         }, response => {
             console.log(response);
         })
     },
     methods: {
+        GetTeamStatics: function(strH, stMatch) {
+            var url = `/api/Finish/FootBallTeamAnalyse/${this.name}/${strH}/${stMatch.HTName}/${stMatch.HTNameAlias}`;
+            if (strH == "vt") {
+                url = `/api/Finish/FootBallTeamAnalyse/${this.name}/${strH}/${stMatch.VTName}/${stMatch.VTNameAlias}`;
+            }
+
+            this.$ajax.get(url).then(response => {
+                console.log(response)
+                if (response.data.status == 1) {
+                    if (strH == "ht") {
+                        stMatch.HTStatic = response.data.data
+                    } else {
+                        stMatch.VTStatic = response.data.data
+                    }
+                }
+            }, response => {
+                console.log(response);
+            })
+        },
+
         drawLine: function() {
             //指定图标的配置和数据 
 
@@ -155,7 +321,31 @@ export default {
             FootballGoalTime.setOption(this.FootballGoalTime);
             var UpEffectDown = this.$echarts.init(document.getElementById('UpEffectDown')); //使用制定的配置项和数据显示图表 
             UpEffectDown.setOption(this.UpEffectDown);
-        }
+        },
+
+        timer: function() {
+            var url = `/api/Finish/FootballAnalyse/${this.name}`;
+            this.$ajax.get(url).then(response => {
+                if (response.data.status == 1) {
+                    this.live_football = []
+                    if (response.data.data != null) {
+                        for (var i = response.data.data.length - 1; i >= 0; i--) {
+                            this.live_football.push({ "football_data": response.data.data[i] });
+                        }
+                    }
+
+
+                    this.over_football = []
+                    if (response.data.over != null) {
+                        for (var i = response.data.over.length - 1; i >= 0; i--) {
+                            this.over_football.push({ "football_data": response.data.over[i] });
+                        }
+                    }
+                }
+            }, response => {
+                console.log(response);
+            })
+        },
     },
     computed: {
         table_width() {
@@ -189,5 +379,9 @@ export default {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.sport_back_color {
+    background: #cba;
 }
 </style>

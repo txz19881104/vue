@@ -15,22 +15,22 @@
                 <div class="content_comic_pic">
                     <div v-for="data in comic_content">
                         <img :src="data" :class="PicShow" style="display: block;">
-            </div>
-                    </div>
-                    <div class="bottem">
-                        <ButtonGroup size="large" shape="circle">
-                            <Button type="primary" @click="Backward">
-                                <Icon type="chevron-left"></Icon>
-                                上一章
-                            </Button>
-                            <Button type="primary" @click="Forward">
-                                下一章
-                                <Icon type="chevron-right"></Icon>
-                            </Button>
-                        </ButtonGroup>
                     </div>
                 </div>
-                </Col>
+                <div class="bottem">
+                    <ButtonGroup size="large" shape="circle">
+                        <Button type="primary" @click="Backward">
+                            <Icon type="chevron-left"></Icon>
+                            上一章
+                        </Button>
+                        <Button type="primary" @click="Forward">
+                            下一章
+                            <Icon type="chevron-right"></Icon>
+                        </Button>
+                    </ButtonGroup>
+                </div>
+            </div>
+            </Col>
         </Row>
     </div>
 </template>
@@ -58,7 +58,7 @@ export default {
     computed: {
         PicShow() {
             return [
-                this.screen_width < 768 ? 'pic-show' : ''
+                this.screen_width < 768 ? 'pic_show' : 'pc_pic_show'
             ]
         }
     },
@@ -204,7 +204,10 @@ export default {
     padding: 1rem;
 }
 
-.pic-show {
+.pic_show {
     width: 100%;
+}
+.pc_pic_show{
+    margin: 0 auto;
 }
 </style>

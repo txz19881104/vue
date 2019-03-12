@@ -1,7 +1,7 @@
 // 数据库连接配置
 module.exports = {
     mysql: {
-        host: '198.13.54.7',
+        host: '149.129.79.183',
         user: 'txz',
         password: 'passwd',
         database: 'EntertainmentDB',

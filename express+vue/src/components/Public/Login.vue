@@ -215,10 +215,6 @@
         {
           this.GLOBAL.IsLogin  = 0
           this.GLOBAL.UserName = ''
-          this.GLOBAL.FictionBackgroundColor = '#fff';
-          this.GLOBAL.FictionFontColor = '#000';
-          this.GLOBAL.FictionFontSize = 19;
-          this.GLOBAL.ComicBackgroundColor = '#fff';
 
           var LoginValue = "IsLogin=" + this.GLOBAL.IsLogin + ";UserName=" + this.GLOBAL.UserName;
           sessionStorage.setItem('LoginValue', LoginValue);
