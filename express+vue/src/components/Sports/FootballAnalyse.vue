@@ -207,6 +207,7 @@ export default {
             vt_statics: "",
             live_football: [],
             over_football: [],
+            timer: null,
 
             FootballGoalTime: {
                 title: {
@@ -251,14 +252,16 @@ export default {
     },
     mounted() {
         this.GLOBAL.GetGlobalValue()
-        setInterval(this.timer, 1000);
+        clearInterval(this.timer)
+        this.timer = null
+        this.setTimer()
 
         this.screen_width = screen.width;
         this.name = this.$route.query.name;
 
-        var url = `/api/Finish/FootballAnalyse/${this.name}`;
+        var url = `/Api/Sports/FootBall/Finish/Analyse/${this.name}`;
         this.$ajax.get(url).then(response => {
-            if (response.data.status == 1) {
+            if (response.data.status == this.GLOBAL.Success) {
                 this.analyse = response.data.analyse
                 for (var key in this.analyse.MapFootballGoal) {
                     this.FootballGoalTime.xAxis.data.push(key + "\n" + this.analyse.MapFootballGoal[key].GoalMatchNum)
@@ -288,6 +291,8 @@ export default {
                         this.over_football.push({ "football_data": response.data.over[i] });
                     }
                 }
+            } else if (response.data == this.GLOBAL.TokenError) {
+                this.$Message.success('以下内容登录可查看，请登录!');
             }
         }, response => {
             console.log(response);
@@ -295,19 +300,20 @@ export default {
     },
     methods: {
         GetTeamStatics: function(strH, stMatch) {
-            var url = `/api/Finish/FootBallTeamAnalyse/${this.name}/${strH}/${stMatch.HTName}/${stMatch.HTNameAlias}`;
+            var url = `/Api/Sports/FootBall/Finish/TeamAnalyse/${this.name}/${strH}/${stMatch.HTName}/${stMatch.HTNameAlias}`;
             if (strH == "vt") {
-                url = `/api/Finish/FootBallTeamAnalyse/${this.name}/${strH}/${stMatch.VTName}/${stMatch.VTNameAlias}`;
+                url = `/Api/Sports/FootBall/Finish/TeamAnalyse/${this.name}/${strH}/${stMatch.VTName}/${stMatch.VTNameAlias}`;
             }
 
             this.$ajax.get(url).then(response => {
-                console.log(response)
-                if (response.data.status == 1) {
+                if (response.data.status == this.GLOBAL.Success) {
                     if (strH == "ht") {
                         stMatch.HTStatic = response.data.data
                     } else {
                         stMatch.VTStatic = response.data.data
                     }
+                } else if (response.data == this.GLOBAL.TokenError) {
+                    this.$Message.success('以下内容登录可查看，请登录!');
                 }
             }, response => {
                 console.log(response);
@@ -323,28 +329,38 @@ export default {
             UpEffectDown.setOption(this.UpEffectDown);
         },
 
-        timer: function() {
-            var url = `/api/Finish/FootballAnalyse/${this.name}`;
-            this.$ajax.get(url).then(response => {
-                if (response.data.status == 1) {
-                    this.live_football = []
-                    if (response.data.data != null) {
-                        for (var i = response.data.data.length - 1; i >= 0; i--) {
-                            this.live_football.push({ "football_data": response.data.data[i] });
-                        }
-                    }
+        setTimer() {
+            if (this.timer == null) {
+                this.timer = setInterval(() => {
+                    var url = `/Api/Sports/FootBall/Finish/TeamAnalyse/${this.name}`;
+                    this.$ajax.get(url).then(response => {
+                        if (response.data.status == this.GLOBAL.Success) {
+                            this.live_football = []
+                            if (response.data.data != null) {
+                                for (var i = response.data.data.length - 1; i >= 0; i--) {
+                                    this.live_football.push({ "football_data": response.data.data[i] });
+                                }
+                            }
 
 
-                    this.over_football = []
-                    if (response.data.over != null) {
-                        for (var i = response.data.over.length - 1; i >= 0; i--) {
-                            this.over_football.push({ "football_data": response.data.over[i] });
+                            this.over_football = []
+                            if (response.data.over != null) {
+                                for (var i = response.data.over.length - 1; i >= 0; i--) {
+                                    this.over_football.push({ "football_data": response.data.over[i] });
+                                }
+                            }
+                        } else if (response.data == this.GLOBAL.TokenError) {
+                            this.$Message.success('以下内容登录可查看，请登录!');
+                            if (this.timer) { //如果定时器在运行则关闭
+                                clearInterval(this.timer);
+                                this.timer = null;
+                            }
                         }
-                    }
-                }
-            }, response => {
-                console.log(response);
-            })
+                    }, response => {
+                        console.log(response);
+                    })
+                }, 1000)
+            }
         },
     },
     computed: {
@@ -356,6 +372,12 @@ export default {
     },
     updated: function() {
         this.drawLine()
+    },
+    beforeDestroy() {
+        if (this.timer) { //如果定时器在运行则关闭
+            clearInterval(this.timer);
+            this.timer = null;
+        }
     }
 }
 </script>

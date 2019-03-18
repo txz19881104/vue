@@ -77,10 +77,15 @@ export default {
         console.log(this.id);
         console.log(this.read_num);
 
-        var url = `/api/Name/Comic/${this.id}/Chapter/${this.read_num}`;
+        var url = `/Api/Entertainment/comic/${this.id}/Chapter/${this.read_num}`;
         this.$ajax.get(url).then(response => {
-            for (var i = 0; i < response.data.data.length; i++) {
-                this.comic_content.push(response.data.data[i].ImgSrc)
+            if (response.data.status == this.GLOBAL.Success) {
+                for (var i = 0; i < response.data.data.length; i++) {
+                    this.comic_content.push(response.data.data[i].ImgSrc)
+                }
+            } else if (response.data == this.GLOBAL.TokenError) {
+                this.GLOBAL.LogOut();
+                this.$ajax.defaults.headers.common['Token'] = "";
             }
         }, response => {
             console.log(response);
@@ -100,10 +105,14 @@ export default {
                 setTimeout(() => {
                     if (this.read_num > 0) {
                         this.read_num = this.read_num + 1;
-                        var url = `/api/Name/Comic/${this.id}/Chapter/${this.read_num}`;
+                        var url = `/Api/Entertainment/comic/${this.id}/Chapter/${this.read_num}`;
                         this.$ajax.get(url).then(response => {
-                            for (var i = 1; i < response.data.data.length; i++) {
-                                this.comic_content.push(response.data.data[i].ImgSrc)
+                            if (response.data.status == this.GLOBAL.Success) {
+                                for (var i = 1; i < response.data.data.length; i++) {
+                                    this.comic_content.push(response.data.data[i].ImgSrc)
+                                }
+                            } else if (response.data == this.GLOBAL.TokenError) {
+                                this.$Message.success('以下内容登录可查看，请登录!');
                             }
                         }, response => {
                             console.log(response);
@@ -118,10 +127,14 @@ export default {
             if (this.read_num > 1) {
                 this.read_num = Number(this.read_num) - 1;
                 this.SaveRecord()
-                var url = `/api/Name/Comic/${this.id}/ChapterByNum/${this.read_num}`;
+                var url = `/Api/Entertainment/comic/${this.id}/Chapter/${this.read_num}`;
                 this.$ajax.get(url).then(response => {
-                    this.$router.push({ query: merge(this.$route.query, { 'name': response.data.data[0].ChapterName, 'num': this.read_num }) })
-                    this.reload();
+                    if (response.data.status == this.GLOBAL.Success) {
+                        this.$router.push({ query: merge(this.$route.query, { 'name': response.data.data[0].ChapterName, 'num': this.read_num }) })
+                        this.reload();
+                    } else if (response.data == this.GLOBAL.TokenError) {
+                        this.$Message.success('以下内容登录可查看，请登录!');
+                    }
                 }, response => {
                     console.log(response);
                 })
@@ -133,15 +146,19 @@ export default {
         Forward: function() {
             if (this.read_num > 0) {
                 this.read_num = Number(this.read_num) + 1;
-                var url = `/api/Name/Comic/${this.id}/ChapterByNum/${this.read_num}`;
+                var url = `/Api/Entertainment/comic/${this.id}/Chapter/${this.read_num}`;
                 this.$ajax.get(url).then(response => {
-                    if (response.data.data.length != 0) {
-                        this.$router.push({ query: merge(this.$route.query, { 'name': response.data.data[0].ChapterName, 'num': this.read_num }) })
-                        this.SaveRecord()
-                        this.reload();
-                    } else {
-                        this.read_num = Number(this.read_num) - 1;
-                        this.$Message.success('暂无下一章节!');
+                    if (response.data.status == this.GLOBAL.Success) {
+                        if (response.data.data.length != 0) {
+                            this.$router.push({ query: merge(this.$route.query, { 'name': response.data.data[0].ChapterName, 'num': this.read_num }) })
+                            this.SaveRecord()
+                            this.reload();
+                        } else {
+                            this.read_num = Number(this.read_num) - 1;
+                            this.$Message.success('暂无下一章节!');
+                        }
+                    } else if (response.data == this.GLOBAL.TokenError) {
+                        this.$Message.success('以下内容登录可查看，请登录!');
                     }
                 }, response => {
                     console.log(response);
@@ -151,12 +168,14 @@ export default {
 
         SaveRecord: function() {
             if (this.GLOBAL.IsLogin != 0) {
-                var url = "/api/UserCookie";
+                var url = "/Api/User/Cookie";
                 this.$ajax.post(url, qs.stringify({ CookieType: 'Comic', NameID: this.id, ChapterName: this.name, ReadNum: this.read_num, User: this.GLOBAL.UserName })).then(response => {
 
                     if (response.status == 200) {
-                        if (response.data.status == 1) {
+                        if (response.data.status == this.GLOBAL.Success) {
                             console.log("记录成功");
+                        } else if (response.data == this.GLOBAL.TokenError) {
+                            this.$Message.success('以下内容登录可查看，请登录!');
                         } else {
                             console.log("记录失败");
                         }
@@ -169,7 +188,7 @@ export default {
             }
 
             var ComicCookie = "NameID=" + this.id + ";ChapterName=" + this.name + ";ReadNum=" + this.read_num;
-            sessionStorage.setItem('ComicCookie', ComicCookie);
+            localStorage.setItem('ComicCookie', ComicCookie);
 
         }
     }
@@ -207,7 +226,8 @@ export default {
 .pic_show {
     width: 100%;
 }
-.pc_pic_show{
+
+.pc_pic_show {
     margin: 0 auto;
 }
 </style>

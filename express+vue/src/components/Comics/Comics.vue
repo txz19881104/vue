@@ -25,14 +25,14 @@
                         <div v-for="data in comic_content" class="style_magin ">
                             <Col :xs="{ span: 18, offset:3 }" class="style_magin_top_comic">
                             <router-link :to="{name:'ComicChapter', query:{name:data.name, id:data.id, introduce:data.introduce, img:data.img} }"><img :src="data.img" class="style_Comic_pic" :alt="data.name">{{ data.name }}</router-link>
-                                </Col>
+                            </Col>
                         </div>
                     </div>
                     <div v-else>
                         <div v-for="data in comic_content" class="style_magin ">
                             <Col :md="{ span:12 }" :lg="{ span:6 }" class="style_magin_top_comic">
                             <router-link :to="{name:'ComicChapter', query:{name:data.name, id:data.id, introduce:data.introduce, img:data.img} }"><img :src="data.img" class="style_Comic_pic_pc" :alt="data.name">{{ data.name }}</router-link>
-                                </Col>
+                            </Col>
                         </div>
                     </div>
                 </Row>
@@ -60,13 +60,16 @@ export default {
 
     methods: {
         getResult: function(keyword) {
-            var url = "/api/2/SearchResult/Comic/All/" + keyword;
+            var url = "/Api/Entertainment/2/SearchResult/comic/All/" + keyword;
             this.$ajax.get(url).then(response => {
-
-                if (keyword == "火影忍者") {
-                    this.hyrz_ID = response.data.data[0].ID;
-                } else if (keyword == "航海王（海贼王）") {
-                    this.hzw_ID = response.data.data[0].ID;
+                if (response.data.status == this.GLOBAL.Success) {
+                    if (keyword == "火影忍者") {
+                        this.hyrz_ID = response.data.data[0].ID;
+                    } else if (keyword == "航海王（海贼王）") {
+                        this.hzw_ID = response.data.data[0].ID;
+                    }
+                } else if (response.data == this.GLOBAL.TokenError) {
+                    this.$Message.success('以下内容登录可查看，请登录!');
                 }
             }, response => {
                 console.log(response);
@@ -82,12 +85,16 @@ export default {
         this.getResult("火影忍者");
         this.getResult("航海王（海贼王）");
 
-        var url = "/api/" + this.GLOBAL.IsLogin + "/Name/Comic/";
+        var url = "/Api/Entertainment/" + this.GLOBAL.IsLogin + "/Name/comic/";
         this.$ajax.get(url).then(response => {
-            for (var i = 0; i < response.data.data.length; i++) {
-                var path = response.data.data[i].Img;
-                var comic_content = { "img": path, "name": response.data.data[i].Name, "introduce": response.data.data[i].Introduce, "id": response.data.data[i].ID }; // 字典 
-                this.comic_content.push(comic_content)
+            if (response.data.status == this.GLOBAL.Success) {
+                for (var i = 0; i < response.data.data.length; i++) {
+                    var path = response.data.data[i].Img;
+                    var comic_content = { "img": path, "name": response.data.data[i].Name, "introduce": response.data.data[i].Introduce, "id": response.data.data[i].ID }; // 字典 
+                    this.comic_content.push(comic_content)
+                }
+            } else if (response.data == this.GLOBAL.TokenError) {
+                this.$Message.success('以下内容登录可查看，请登录!');
             }
         }, response => {
             console.log(response);

@@ -80,38 +80,41 @@ export default {
         this.introduce = this.$route.query.introduce;
         this.screen_width = screen.width;
 
-        var url = "/api/Name/Fiction/Chapter/" + this.id + "/" + this.current_chapter_num;
+        var url = "/Api/Entertainment/fiction/Chapter/" + this.id + "/" + this.current_chapter_num;
         this.$ajax.get(url).then(response => {
-            var i;
+            if (response.data.status == this.GLOBAL.Success) {
+                var i;
 
-            this.max_chapter = response.data.max_chapter;
-            if (this.max_chapter > this.read_chapter) {
-                this.is_update = true;
-            }
+                this.max_chapter = response.data.max_chapter;
+                if (this.max_chapter > this.read_chapter) {
+                    this.is_update = true;
+                }
 
-            for (i = 1; i < response.data.data.length + 1; i++) {
-                var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum, "url": response.data.data[i - 1].ContentUrl };
+                for (i = 1; i < response.data.data.length + 1; i++) {
+                    var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum, "url": response.data.data[i - 1].ContentUrl };
 
 
-                this.fiction_content.push(content);
-                if (i == 1) {
-                    if (this.first_content.id == 0) {
-                        this.first_content = content;
+                    this.fiction_content.push(content);
+                    if (i == 1) {
+                        if (this.first_content.id == 0) {
+                            this.first_content = content;
+                        }
                     }
                 }
+
+                this.current_chapter_num = this.current_chapter_num + 400;
+            } else if (response.data == this.GLOBAL.TokenError) {
+                this.$Message.success('以下内容登录可查看，请登录!');
             }
-
-            this.current_chapter_num = this.current_chapter_num + 400;
-
         }, response => {
             console.log(response);
         })
 
 
         if (this.GLOBAL.IsLogin != 0) {
-            var url = "/api/Type/Fiction/User/" + this.GLOBAL.UserName + "/NameID/" + this.id;
+            var url = "/Api/User/Type/fiction/User/" + this.GLOBAL.UserName + "/NameID/" + this.id;
             this.$ajax.get(url).then(response => {
-                if (response.data.status == 1) {
+                if (response.data.status == this.GLOBAL.Success) {
                     if (response.data.data.length != 0) {
                         this.first_content = { "name": response.data.data[0].ChapterName, "id": this.id, "num": response.data.data[0].ReadNum, "url": response.data.data[0].ReadUrl };
 
@@ -121,12 +124,14 @@ export default {
                         }
                         this.readChapter = response.data.data[0].ChapterName;
                     }
+                } else if (response.data == this.GLOBAL.TokenError) {
+                    this.$Message.success('以下内容登录可查看，请登录!');
                 }
             }, response => {
                 console.log(response);
             })
         } else {
-            var FictionCookie = sessionStorage.getItem('FictionCookie');
+            var FictionCookie = localStorage.getItem('FictionCookie');
             this.GetFictionCookie(FictionCookie)
             if (FictionCookie != null) {
                 this.first_content = { "name": this.name, "id": this.id, "num": this.read_num, "url": this.url };
@@ -157,22 +162,25 @@ export default {
         handleReachBottom() {
             return new Promise(resolve => {
                 setTimeout(() => {
-                    var url = "/api/Name/Fiction/Chapter/" + this.id + "/" + this.current_chapter_num;
+                    var url = "/Api/User/Type/fiction/User/" + this.GLOBAL.UserName + "/NameID/" + this.id;
 
                     if (!this.bGetResponse) {
                         this.bGetResponse = true;
                         this.$ajax.get(url).then(response => {
-                            var i;
+                            if (response.data.status == this.GLOBAL.Success) {
+                                var i;
 
-                            for (i = 1; i < response.data.data.length + 1; i++) {
-                                var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum, "url": response.data.data[i - 1].ContentUrl };
+                                for (i = 1; i < response.data.data.length + 1; i++) {
+                                    var content = { "name": response.data.data[i - 1].ChapterName, "id": this.id, "num": response.data.data[i - 1].ChapterNum, "url": response.data.data[i - 1].ContentUrl };
 
-                                this.fiction_content.push(content);
+                                    this.fiction_content.push(content);
+                                }
+
+                                this.current_chapter_num = this.current_chapter_num + 400;
+                                this.bGetResponse = false;
+                            } else if (response.data == this.GLOBAL.TokenError) {
+                                this.$Message.success('以下内容登录可查看，请登录!');
                             }
-
-                            this.current_chapter_num = this.current_chapter_num + 400;
-                            this.bGetResponse = false;
-
                         }, response => {
                             console.log(response);
                             this.bGetResponse = false;

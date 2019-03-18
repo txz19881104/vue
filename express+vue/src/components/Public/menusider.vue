@@ -127,8 +127,12 @@ export default {
 
         Logout: function() {
             this.GLOBAL.IsLogin = 5
+            localStorage.removeItem('Token');
+            this.$ajax.defaults.headers.common['Token'] = "";
+            localStorage.removeItem('LoginValue');
             this.$refs.side_menu.toggleCollapse();
             this.$router.push({ path: '/Login' });
+
         },
 
         SettingWeb: function() {
@@ -145,7 +149,7 @@ export default {
             console.log(UserSetting)
 
             if (this.GLOBAL.IsLogin != 0) {
-                var url = "/api/ChangeSetting";
+                var url = "/Api/User/ChangeSetting";
 
                 this.$ajax.post(url, qs.stringify({ user: this.GLOBAL.UserName, setting: UserSetting })).then(response => {
                     if (response.status == 200) {
@@ -160,7 +164,7 @@ export default {
                 });
             }
 
-            sessionStorage.setItem('UserSetting', UserSetting);
+            localStorage.setItem('UserSetting', UserSetting);
 
             this.$refs.side_menu.toggleCollapse();
             this.$Message.info('设置成功');

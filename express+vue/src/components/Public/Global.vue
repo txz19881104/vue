@@ -2,24 +2,27 @@
 const IsLogin = 0;
 const UserName = '';
 
-const ServerIP = '198.13.54.7';
-const ServerPort = 8000;
 const FictionBackgroundColor = '#fff';
 const FictionFontColor = '#000';
 const FictionFontSize = 19;
 const ComicBackgroundColor = '#fff';
+
+const Success = 0;
+const Failed = -1;
+const TokenError = "TokenError";
 
 
 export default {
     IsLogin, //0：未登录  1：普通用户  2：超级用户 5:登出
     UserName,
 
-    ServerIP,
-    ServerPort,
     FictionBackgroundColor,
     FictionFontColor,
     FictionFontSize,
     ComicBackgroundColor,
+    Success,
+    Failed,
+    TokenError,
 
 
     GetSetting: function(setting) {
@@ -41,7 +44,7 @@ export default {
             }
 
             var UserSetting = "FictionBackgroundColor=" + this.FictionBackgroundColor + ";FictionFontColor=" + this.FictionFontColor + ";FictionFontSize=" + this.FictionFontSize + ";ComicBackgroundColor=" + this.ComicBackgroundColor;
-            sessionStorage.setItem('UserSetting', UserSetting);
+            localStorage.setItem('UserSetting', UserSetting);
         }
 
     },
@@ -62,12 +65,13 @@ export default {
     },
 
     GetGlobalValue: function() {
-        var UserSetting = sessionStorage.getItem('UserSetting');
-        console.log(UserSetting)
+        var UserSetting = localStorage.getItem('UserSetting');
         this.GetSetting(UserSetting);
 
-        var LoginValue = sessionStorage.getItem('LoginValue');
+        var LoginValue = localStorage.getItem('LoginValue');
         this.GetLoginValue(LoginValue);
+
     },
+
 }
 </script>

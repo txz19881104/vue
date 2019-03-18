@@ -11,12 +11,12 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-        '/api': {   //这里是我配置的名字
-        //target: 'http://localhost:9000/api', //这个路径是我代理到本地tp框架里面
-        target: 'http://tangxinzhu.com:9000/api', //这个路径是我代理到本地tp框架里面
+        '/Api': {   //这里是我配置的名字
+        //target: 'http://localhost:9000/Api', //这个路径是我代理到本地tp框架里面
+        target: 'http://tangxinzhu.com:9000/Api', //这个路径是我代理到本地tp框架里面
         changeOrigin: true, //开启代理
         pathRewrite: {
-          '^/api': ''//这里重写路径/run就代理到对应地址
+          '^/Api': ''//这里重写路径/run就代理到对应地址
         }
       }
 

@@ -153,15 +153,17 @@ export default {
         this.team_name = this.$route.query.team_name;
         this.type = this.$route.query.type;
 
-        var url = `/api/Finish/BasketballAnalyse/${this.name}/${this.type}/${this.team_name}`;
+        var url = `/Api/Sports/Basketball/Finish/Analyse/${this.name}/${this.type}/${this.team_name}`;
         this.$ajax.get(url).then(response => {
-            if (response.data.status == 1) {
+            if (response.data.status == this.GLOBAL.Success) {
                 for (var i = 0; i < response.data.data.length; i++) {
                     this.match.push(response.data.data[i]);
                 }
                 this.analyse = response.data.analyse
                 this.option.series[0].data = [this.analyse.HTFirstBig, this.analyse.HTSecondBig, this.analyse.HTThirdBig, this.analyse.HTFourthBig]
                 this.option.series[1].data = [this.analyse.VTFirstBig, this.analyse.VTSecondBig, this.analyse.VTThirdBig, this.analyse.VTFourthBig]
+            } else if (response.data == this.GLOBAL.TokenError) {
+                this.$Message.success('以下内容登录可查看，请登录!');
             }
         }, response => {
             console.log(response);

@@ -5,60 +5,87 @@
             <Col :xs="{ span: 24, offset: 0 }" :lg="{ span: 16, offset: 4}" class="demo-tabs-style1" style="background: #e3e8ee;padding:16px;">
             <Tabs type="card">
                 <TabPane label="Football" icon="ios-football">
-                    <Row style="background:#eee;">
-                        <div v-for="data in live_football">
-                            <Col :xs="{ span: 24, offset: 0 }" :lg="{ span: 10, offset: 1}" style="margin-top: 1rem; margin-bottom: 1rem; margin-right: 1.5rem;">
-                            <Card :bordered="false">
-                                <p slot="title">
-                                    <router-link :to="{name:'FootballAnalyse', query:{name:data.name}}">
-                                        {{data.name}}
-                                    </router-link>
-                                </p>
-                                <table style="border:0.1rem #abc solid;" border='1'>
-                                    <div>
-                                        <tr style="background:#cba;">
-                                            <th style="background:#abc;">
-                                                <div :class="table_width" :title="data.name">
-                                                    <router-link :to="{name:'FootballAnalyse', query:{name:data.name}}">
-                                                        {{data.name}}
-                                                    </router-link>
-                                                </div>
-                                            </th>
-                                            <th width="200" style="background:#fcc;">统计</th>
-                                            <th width="200" style="background:#fcc;">概率</th>
-                                        </tr>
-                                        <tr>
-                                            <td width="100">上半场</td>
-                                            <td width="100">{{(data.analyse.UpGoalCount/data.analyse.MatchTotal).toFixed(2)}}</td>
-                                            <td width="100">{{(data.analyse.UpHaveGoalMatch/data.analyse.MatchTotal).toFixed(2)}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td width="100">下半场</td>
-                                            <td width="100">{{(data.analyse.DownGoalCount/data.analyse.MatchTotal).toFixed(2)}}</td>
-                                            <td width="100">{{(data.analyse.DownHaveGoalMatch/data.analyse.MatchTotal).toFixed(2)}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td width="100">全场</td>
-                                            <td width="100">{{(data.analyse.GoalTotal/data.analyse.MatchTotal).toFixed(2)}}</td>
-                                            <td width="100">{{(data.analyse.AllHaveGoalMatch/data.analyse.MatchTotal).toFixed(2)}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td width="100" style="overflow: hidden;text-overflow: ellipsis;">绝杀</td>
-                                            <td width="100">{{(data.analyse.MapFootballGoal["75-90"].GoalNum/data.analyse.MapFootballGoal["75-90"].GoalMatchNum).toFixed(2)}}</td>
-                                            <td width="100">{{(data.analyse.MapFootballGoal["75-90"].GoalMatchNum/data.analyse.TotalGoalTimeMatch).toFixed(2)}}</td>
-                                        </tr>
-                                        </tr>
-                                        <tr>
-                                            <td width="100" style="overflow: hidden;text-overflow: ellipsis;">比赛数量</td>
-                                            <td width="100">总数：{{data.analyse.MatchTotal}}</td>
-                                            <td width="100">有效：{{data.analyse.TotalGoalTimeMatch}}</td>
-                                        </tr>
-                                    </div>
-                                </table>
-                            </Card>
-                            </Col>
-                        </div>
+                    <Row>
+                        <Col span="24">
+                        <Select v-model="SelectFootballMatch" size="small" filterable multiple>
+                            <Option v-for="item in FootballMatchList" :value="item" :key="item">{{ item }}</Option>
+                        </Select>
+                        </Col>
                     </Row>
+                    <br />
+                    <br />
+                    <table style="border:0.1rem #abc solid;" border='1'>
+                        <div v-for="data in live_football">
+                            <tr style="background:#cba;">
+                                <td width="200" style="background:#fcc;" class="table_td">
+                                    <router-link :to="{name:'FootballAnalyse', query:{name:data.football_data.HTName}}">
+                                        {{data.football_data.HTName}}
+                                    </router-link>
+                                </td>
+                                <td width="300" style="background:#abc;">
+                                    <router-link :to="{name:'FootballAnalyse', query:{name:data.football_data.Name}}">
+                                        {{data.football_data.Name}} {{data.football_data.EventSta}}
+                                    </router-link>
+                                </td>
+                                <td width="200" style="background:#edf;" class="table_td">
+                                    <router-link :to="{name:'FootballAnalyse', query:{name:data.football_data.VTName}}">
+                                        {{data.football_data.VTName}}
+                                    </router-link>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTTotalScore==data.football_data.HTHalfScore)}">{{data.football_data.HTTotalScore}}</td>
+                                <td width="200">全场比分</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTTotalScore==data.football_data.VTHalfScore)}">{{data.football_data.VTTotalScore}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTHalfScore}}</td>
+                                <td width="200">半场比分</td>
+                                <td width="100">{{data.football_data.VTHalfScore}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTShoot>=15)}">{{data.football_data.HTShoot}}</td>
+                                <td width="200">射门</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTShoot>=15)}">{{data.football_data.VTShoot}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100" :class="{sport_back_color:(data.football_data.HTShooton>=10)}">{{data.football_data.HTShooton}}</td>
+                                <td width="200">射正</td>
+                                <td width="100" :class="{sport_back_color:(data.football_data.VTShooton>=10)}">{{data.football_data.VTShooton}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTHalfCorner}}</td>
+                                <td width="200">半场角球</td>
+                                <td width="100">{{data.football_data.VTHalfCorner}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTTotalCorner}}</td>
+                                <td width="200">全场角球</td>
+                                <td width="100">{{data.football_data.VTTotalCorner}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.Asionodd}}</td>
+                                <td width="200">盘口</td>
+                                <td width="100">{{data.football_data.Numodd}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HTRed}}</td>
+                                <td width="200">红牌</td>
+                                <td width="100">{{data.football_data.VTRed}}</td>
+                            </tr>
+                            <tr>
+                                <td width="100">{{data.football_data.HGoalTime}}</td>
+                                <td width="200">进球时间</td>
+                                <td width="100">{{data.football_data.VGoalTime}}</td>
+                            </tr>
+                            <br />
+                        </div>
+                    </table>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
                 </TabPane>
                 <TabPane label="Basketball" icon="ios-basketball">
                     <Row>
@@ -144,7 +171,6 @@ export default {
             live_football: [],
             SelectFootballMatch: [],
             FootballMatchList: [],
-
             timer: null,
         }
 
@@ -192,10 +218,22 @@ export default {
             if (response.data.status == this.GLOBAL.Success) {
                 var nRefreash = 0;
                 for (var key in response.data.data) { // 遍历Map
-                    for (var i = response.data.data[key].length - 1; i >= 0; i--) {
-                        if (response.data.data[key].MapFootballGoal != null) {
-                            this.live_football.push({ "analyse": response.data.data[key] });
+                    if (nRefreash == 0) {
+                        nRefreash = 1;
+                        this.live_football = [];
+                        if (this.SelectFootballMatch.length == 0) {
+                            this.FootballMatchList = [];
                         }
+                    }
+
+                    for (var i = response.data.data[key].length - 1; i >= 0; i--) {
+                        if (this.SelectFootballMatch.indexOf(key) != -1 || this.SelectFootballMatch.length == 0) {
+                            this.live_football.push({ "football_data": response.data.data[key][i] });
+                        }
+                    }
+
+                    if (this.FootballMatchList.indexOf(key) == -1) {
+                        this.FootballMatchList.push(key)
                     }
                 }
             } else if (response.data == this.GLOBAL.TokenError) {
@@ -210,6 +248,7 @@ export default {
         setTimer() {
             if (this.timer == null) {
                 this.timer = setInterval(() => {
+
                     var url = "/Api/Sports/BasketBall/Live";
                     this.$ajax.get(url).then(response => {
                         if (response.data.status == this.GLOBAL.Success) {
@@ -260,13 +299,27 @@ export default {
 
                     var url = "/Api/Sports/FootBall/Live";
                     this.$ajax.get(url).then(response => {
-                        this.live_football = []
                         if (response.data.status == this.GLOBAL.Success) {
+
+                            var nRefreash = 0;
                             for (var key in response.data.data) { // 遍历Map
-                                if (response.data.data[key].MapFootballGoal != null) {
-                                    this.live_football.push({ "name": key, "analyse": response.data.data[key] });
+                                if (nRefreash == 0) {
+                                    nRefreash = 1;
+                                    this.live_football = [];
+                                    if (this.SelectFootballMatch.length == 0) {
+                                        this.FootballMatchList = [];
+                                    }
                                 }
 
+                                for (var i = response.data.data[key].length - 1; i >= 0; i--) {
+                                    if (this.SelectFootballMatch.indexOf(key) != -1 || this.SelectFootballMatch.length == 0) {
+                                        this.live_football.push({ "football_data": response.data.data[key][i] });
+                                    }
+                                }
+
+                                if (this.FootballMatchList.indexOf(key) == -1) {
+                                    this.FootballMatchList.push(key)
+                                }
                             }
                         } else if (response.data == this.GLOBAL.TokenError) {
                             this.$Message.success('以下内容登录可查看，请登录!');
@@ -275,14 +328,14 @@ export default {
                                 this.timer = null;
                             }
                         }
+
                     }, response => {
                         console.log(response);
                     })
                 }, 1000)
-            }
+            },
         }
     },
-
     computed: {
         table_width() {
             return [

@@ -1,6 +1,7 @@
 <template>
     <div id="footer">
-      <p style="margin-top: 1rem">Copyright © 2018 tangxinzhu All Rights Reserved.</p>
+      <p style="margin-top: 1rem;color:blue;">Tangxinzhu</p>
+      <p>(378788698@qq.com)</p>
     </div>
 </template>
 

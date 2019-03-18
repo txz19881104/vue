@@ -16,7 +16,10 @@
                 <Row class="style_magin back_color">
                     <div v-for="data in fiction_content" class="style_magin ">
                         <Col :xs="{ span: 7, offset:1 }" :md="{ span:4, offset:1  }" :lg="{ span:3, offset:1 }" class="style_magin_top_fiction">
-                        <router-link :to="{name:'FictionChapter', query:{name:data.name, id:data.id, introduce:data.introduce, img:data.img} }"><img :src="data.img" :class="Moblie_Fiction_PicShow" :alt="data.name">{{ data.name }}</img></router-link>
+                        <router-link :to="{name:'FictionChapter', query:{name:data.name, id:data.id, introduce:data.introduce, img:data.img} }">
+                            <img :src="data.img" :class="Moblie_Fiction_PicShow" :alt="data.name"></img>
+                            <div id="fiction_name">{{ data.name }}</div>
+                        </router-link>
                         </Col>
                     </div>
                 </Row>
@@ -69,17 +72,20 @@ export default {
                 this.changeRed = 0;
             }
 
-            var url = "/api/" + this.GLOBAL.IsLogin + "/Name/Fiction/";
+            var url = "/Api/Entertainment/" + this.GLOBAL.IsLogin + "/Name/fiction/";
             if (this.name != "全部") {
-                url = "/api/" + this.GLOBAL.IsLogin + "/SearchResult/Fiction/Type/" + this.name;
+                url = "/Api/Entertainment/" + this.GLOBAL.IsLogin + "/SearchResult/fiction/Type/" + this.name;
             }
 
             this.$ajax.get(url).then(response => {
-                for (var i = 0; i < response.data.data.length; i++) {
-                    var path = response.data.data[i].Img;
-                    var fiction_content = { "name": response.data.data[i].Name, "introduce": response.data.data[i].Introduce, "id": response.data.data[i].ID, "img": path }; // 字典 
-                    this.fiction_content.push(fiction_content)
-
+                if (response.data.status == this.GLOBAL.Success) {
+                    for (var i = 0; i < response.data.data.length; i++) {
+                        var path = response.data.data[i].Img;
+                        var fiction_content = { "name": response.data.data[i].Name, "introduce": response.data.data[i].Introduce, "id": response.data.data[i].ID, "img": path }; // 字典 
+                        this.fiction_content.push(fiction_content)
+                    }
+                } else if (response.data == this.GLOBAL.TokenError) {
+                    this.$Message.success('以下内容登录可查看，请登录!');
                 }
             }, response => {
                 console.log(response);
@@ -210,6 +216,12 @@ export default {
 #menu ul li span:hover {
     color: #00FFFF;
 
+}
+
+#fiction_name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
 }
 
 .ClickNav {
